@@ -1,0 +1,66 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap");
+
+@font-face {
+  font-family: 'Sonar Hubermann';
+  src: url('/fonts/Sonar Hubermann - SaintRegus-SemiBold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Sonar Hubermann';
+  src: url('/fonts/Sonar Hubermann - SaintRegus-SemiBoldCondensed.otf') format('opentype');
+  font-weight: 600;
+  font-stretch: condensed;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Sonar Hubermann';
+  src: url('/fonts/Sonar Hubermann - SaintRegus-SemiBoldExpanded.otf') format('opentype');
+  font-weight: 600;
+  font-stretch: expanded;
+  font-style: normal;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-sand-300;
+  }
+
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+
+  body {
+    @apply bg-[#F5F5F5] font-sans text-cocoa-900 antialiased;
+    margin: 0;
+  }
+}
+
+@layer components {
+  .bg-luxury {
+    background-image:
+      radial-gradient(circle at 8% 6%, rgba(181, 132, 92, 0.15), transparent 35%),
+      radial-gradient(circle at 84% 2%, rgba(92, 56, 42, 0.1), transparent 30%),
+      linear-gradient(180deg, #fffdfa 0%, #f8f3ed 100%);
+  }
+
+  .lux-card {
+    @apply rounded-2xl border border-sand-300 bg-ivory-50/85 p-5 shadow-luxury backdrop-blur md:p-6;
+  }
+
+  .lux-input {
+    @apply w-full rounded-xl border border-sand-300 bg-white px-4 py-2.5 text-sm text-cocoa-900 outline-none transition placeholder:text-cocoa-500 focus:border-cocoa-500 focus:ring-2 focus:ring-cocoa-100;
+  }
+
+  .lux-button {
+    @apply inline-flex items-center justify-center rounded-full bg-cocoa-900 px-5 py-2.5 text-sm font-semibold text-ivory-50 transition hover:bg-cocoa-700;
+  }
+}
