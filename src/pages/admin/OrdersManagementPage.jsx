@@ -82,6 +82,17 @@ export default function OrdersManagementPage() {
       alert("Status update failed");
     }
   };
+  const verifyOrder = async (orderId, pickupCode) => {
+    try {
+      await api.post(`/orders/${orderId}/verify`, { pickupCode });
+      loadOrders();
+      setNotification("OTP Verified & Completed!");
+      setTimeout(() => setNotification(null), 4000);
+    } catch (error) {
+      alert(error?.response?.data?.message || "Invalid OTP code.");
+    }
+  };
+
   const sections = useMemo(() => {
     const search = searchQuery.toLowerCase();
     const filtered = orders.filter(o => 
@@ -90,7 +101,7 @@ export default function OrdersManagementPage() {
     );
     return {
       incoming: filtered.filter(o => o.status === "pending"),
-      kitchen: filtered.filter(o => o.status === "preparing" || o.status === "paid"),
+      kitchen: filtered.filter(o => o.status === "accepted" || o.status === "preparing" || o.status === "paid"),
       pickup: filtered.filter(o => o.status === "ready")
     };
   }, [orders, searchQuery]);
@@ -199,7 +210,7 @@ export default function OrdersManagementPage() {
                    {activeTab === 'incoming' && (
                      <div className="flex gap-2">
                         <button 
-                          onClick={() => updateStatus(order._id, 'preparing')}
+                          onClick={() => updateStatus(order._id, 'accepted')}
                           className="flex-1 rounded-[1rem] bg-emerald-500 py-3 text-[10px] font-black text-white uppercase tracking-widest flex items-center justify-center gap-2"
                         >
                            <CheckCircle2 size={14} /> Accept
@@ -213,12 +224,21 @@ export default function OrdersManagementPage() {
                      </div>
                    )}
                    {activeTab === 'kitchen' && (
-                     <button 
-                       onClick={() => updateStatus(order._id, 'ready')}
-                       className="w-full rounded-[1rem] bg-amber-500 py-3.5 text-[10px] font-black text-white uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg"
-                     >
-                        <Flame size={14} /> Mark as Prepared
-                     </button>
+                     order.status === 'accepted' ? (
+                       <button 
+                         onClick={() => updateStatus(order._id, 'preparing')}
+                         className="w-full rounded-[1rem] bg-orange-500 py-3.5 text-[10px] font-black text-white uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg"
+                       >
+                          <Flame size={14} /> Start Preparing
+                       </button>
+                     ) : (
+                       <button 
+                         onClick={() => updateStatus(order._id, 'ready')}
+                         className="w-full rounded-[1rem] bg-amber-500 py-3.5 text-[10px] font-black text-white uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg"
+                       >
+                          <CheckCircle2 size={14} /> Mark as Ready
+                       </button>
+                     )
                    )}
                    {activeTab === 'pickup' && (
                      <div className="flex flex-col gap-3">
@@ -226,12 +246,27 @@ export default function OrdersManagementPage() {
                            <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Pickup Code</span>
                            <span className="text-sm font-black text-emerald-700 tracking-[0.2em] font-mono">{order.pickupCodePlain || "0000"}</span>
                         </div>
-                        <button 
-                          onClick={() => updateStatus(order._id, 'completed')}
-                          className="w-full rounded-[1rem] bg-[#1A1A1A] py-3.5 text-[10px] font-black text-white uppercase tracking-widest flex items-center justify-center gap-2"
+                        <form 
+                          onSubmit={(e) => {
+                             e.preventDefault();
+                             const code = new FormData(e.target).get("pickupCode");
+                             verifyOrder(order._id, code);
+                          }}
+                          className="flex items-center gap-2"
                         >
-                           <Gift size={14} /> Complete Order
-                        </button>
+                           <input 
+                             name="pickupCode" 
+                             placeholder="Enter 6-digit OTP" 
+                             required 
+                             className="flex-1 rounded-[1rem] bg-white px-4 py-3.5 text-[10px] font-black text-[#1A1A1A] outline-none border border-sand-200 focus:ring-2 focus:ring-emerald-500/20 transition-all placeholder:text-cocoa-900/30 shadow-sm"
+                           />
+                           <button 
+                             type="submit"
+                             className="rounded-[1rem] bg-[#1A1A1A] px-5 py-3.5 text-[10px] font-black text-white uppercase tracking-widest flex items-center justify-center gap-2 whitespace-nowrap"
+                           >
+                              <Gift size={14} /> Verify
+                           </button>
+                        </form>
                      </div>
                    )}
                 </div>

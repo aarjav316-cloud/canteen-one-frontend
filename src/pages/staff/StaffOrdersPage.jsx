@@ -3,12 +3,12 @@ import api from "../../lib/api";
 import { formatINR, titleCase } from "../../lib/format";
 import { connectSocket, socket } from "../../lib/socket";
 const statuses = [
-  "pending",
-  "paid",
+  "accepted",
   "preparing",
   "ready",
   "cancelled",
 ];
+const statusLabel = (s) => (s === "pending" || s === "paid" ? "Pending" : titleCase(s));
 const statusColors = {
   pending: "bg-yellow-100 text-yellow-800 border-yellow-300",
   paid: "bg-blue-100 text-blue-800 border-blue-300",
@@ -69,7 +69,7 @@ export default function StaffOrdersPage() {
     try {
       await api.patch(`/orders/${orderId}/status`, { status });
       setFeedback({
-        text: `Order #${orderId.slice(-8)} updated to ${titleCase(status)}.`,
+        text: `Order #${orderId.slice(-8)} updated to ${statusLabel(status)}.`,
         isError: false,
       });
       setReloadKey((k) => k + 1);
@@ -169,7 +169,7 @@ export default function StaffOrdersPage() {
               </div>
               <div className="mt-4 border-t border-sand-200 pt-4">
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-cocoa-500">
-                  Current: <span className={`ml-1 inline-block rounded-full border px-2 py-0.5 text-xs font-bold ${statusColors[order.status] || ""}`}>{titleCase(order.status)}</span>
+                  Current: <span className={`ml-1 inline-block rounded-full border px-2 py-0.5 text-xs font-bold ${statusColors[order.status] || ""}`}>{statusLabel(order.status)}</span>
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {statuses.map((status) => (
@@ -186,7 +186,7 @@ export default function StaffOrdersPage() {
                             : "border-cocoa-300 text-cocoa-700 hover:bg-cocoa-900 hover:text-ivory-50 hover:border-cocoa-900"
                       }`}
                     >
-                      {titleCase(status)}
+                      {statusLabel(status)}
                     </button>
                   ))}
                 </div>

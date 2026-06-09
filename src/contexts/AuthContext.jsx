@@ -1,7 +1,9 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import { AuthContext } from "./AuthContextObject";
 import api from "../lib/api";
+
 const decodeToken = (token) => {
+  if (!token) return null;
   try {
     const payload = token.split(".")[1];
     const normalized = payload.replace(/-/g, "+").replace(/_/g, "/");
@@ -11,39 +13,51 @@ const decodeToken = (token) => {
     return null;
   }
 };
+
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => localStorage.getItem("canteen_token") || "");
-  const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem("canteen_token");
-    return saved ? decodeToken(saved) : null;
-  });
+  const [user, setUser] = useState(() => decodeToken(token));
   const [dbUser, setDbUser] = useState(null);
-  const syncProfile = async () => {
+
+  const syncProfile = useCallback(async () => {
      if (!token) return;
      try {
          const { data } = await api.get('/auth/profile');
          if (data?.user) setDbUser(data.user);
      } catch (err) {
          console.error("Profile sync failed", err);
+         if (err.response?.status === 401) {
+             // Handle expired token
+             setToken("");
+             localStorage.removeItem("canteen_token");
+         }
      }
-  };
-  useEffect(() => {
-     syncProfile();
   }, [token]);
-  const login = (nextToken) => {
+
+  useEffect(() => {
+     setUser(decodeToken(token));
+     if (token) {
+         syncProfile();
+     } else {
+         setDbUser(null);
+     }
+  }, [token, syncProfile]);
+
+  const login = useCallback((nextToken) => {
+    if (!nextToken) return;
     localStorage.setItem("canteen_token", nextToken);
     setToken(nextToken);
-    setUser(decodeToken(nextToken));
-  };
-  const logout = () => {
+  }, []);
+
+  const logout = useCallback(() => {
     localStorage.removeItem("canteen_token");
     setToken("");
-    setUser(null);
-    setDbUser(null);
-  };
+  }, []);
+
   const activeUser = useMemo(() => {
       return dbUser ? { ...user, ...dbUser } : user;
   }, [user, dbUser]);
+
   const value = useMemo(
     () => ({
       token,
@@ -55,7 +69,8 @@ export function AuthProvider({ children }) {
       logout,
       syncProfile
     }),
-    [token, activeUser]
+    [token, activeUser, login, logout, syncProfile]
   );
+
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

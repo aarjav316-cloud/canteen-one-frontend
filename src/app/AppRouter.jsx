@@ -20,20 +20,21 @@ import AdminOrderHistoryPage from "../pages/admin/AdminOrderHistoryPage";
 import AdminProfilePage from "../pages/admin/AdminProfilePage";
 import AdminAccountSettingsPage from "../pages/admin/AdminAccountSettingsPage";
 import AdminHelpCentrePage from "../pages/admin/AdminHelpCentrePage";
+import OAuthCallback from "../pages/auth/OAuthCallback";
 import NotFoundPage from "../pages/NotFoundPage";
 export default function AppRouter() {
   return (
     <Routes>
-      
       <Route element={<StudentLayout />}>
         <Route path="/" element={<StudentHomePage />} />
         <Route path="/student/menu" element={<MenuPage />} />
         <Route path="/student/cart" element={<CartPage />} />
       </Route>
-      
+
       <Route path="/login" element={<Navigate to="/" replace />} />
       <Route path="/register" element={<Navigate to="/" replace />} />
-      
+      <Route path="/auth/callback" element={<OAuthCallback />} />
+
       <Route element={<RequireAuth />}>
         <Route element={<RequireRole roles={["student"]} />}>
           <Route element={<StudentLayout />}>
@@ -57,7 +58,10 @@ export default function AppRouter() {
           <Route path="/admin/menu" element={<MenuManagementPage />} />
           <Route path="/admin/history" element={<AdminOrderHistoryPage />} />
           <Route path="/admin/profile" element={<AdminProfilePage />} />
-          <Route path="/admin/settings" element={<AdminAccountSettingsPage />} />
+          <Route
+            path="/admin/settings"
+            element={<AdminAccountSettingsPage />}
+          />
           <Route path="/admin/help" element={<AdminHelpCentrePage />} />
         </Route>
       </Route>

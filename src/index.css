@@ -1,23 +1,26 @@
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap");
 
 @font-face {
-  font-family: 'Sonar Hubermann';
-  src: url('/fonts/Sonar Hubermann - SaintRegus-SemiBold.otf') format('opentype');
+  font-family: "Sonar Hubermann";
+  src: url("/fonts/Sonar Hubermann - SaintRegus-SemiBold.otf")
+    format("opentype");
   font-weight: 600;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Sonar Hubermann';
-  src: url('/fonts/Sonar Hubermann - SaintRegus-SemiBoldCondensed.otf') format('opentype');
+  font-family: "Sonar Hubermann";
+  src: url("/fonts/Sonar Hubermann - SaintRegus-SemiBoldCondensed.otf")
+    format("opentype");
   font-weight: 600;
   font-stretch: condensed;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Sonar Hubermann';
-  src: url('/fonts/Sonar Hubermann - SaintRegus-SemiBoldExpanded.otf') format('opentype');
+  font-family: "Sonar Hubermann";
+  src: url("/fonts/Sonar Hubermann - SaintRegus-SemiBoldExpanded.otf")
+    format("opentype");
   font-weight: 600;
   font-stretch: expanded;
   font-style: normal;
@@ -47,7 +50,11 @@
 @layer components {
   .bg-luxury {
     background-image:
-      radial-gradient(circle at 8% 6%, rgba(181, 132, 92, 0.15), transparent 35%),
+      radial-gradient(
+        circle at 8% 6%,
+        rgba(181, 132, 92, 0.15),
+        transparent 35%
+      ),
       radial-gradient(circle at 84% 2%, rgba(92, 56, 42, 0.1), transparent 30%),
       linear-gradient(180deg, #fffdfa 0%, #f8f3ed 100%);
   }
@@ -63,4 +70,35 @@
   .lux-button {
     @apply inline-flex items-center justify-center rounded-full bg-cocoa-900 px-5 py-2.5 text-sm font-semibold text-ivory-50 transition hover:bg-cocoa-700;
   }
+}
+
+/* Toast Animations */
+@keyframes enter {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes leave {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.animate-enter {
+  animation: enter 0.3s ease-out;
+}
+
+.animate-leave {
+  animation: leave 0.2s ease-in forwards;
 }
