@@ -21,6 +21,7 @@ import AdminProfilePage from "../pages/admin/AdminProfilePage";
 import AdminAccountSettingsPage from "../pages/admin/AdminAccountSettingsPage";
 import AdminHelpCentrePage from "../pages/admin/AdminHelpCentrePage";
 import OAuthCallback from "../pages/auth/OAuthCallback";
+import ForgotPasswordPage from "../pages/auth/ForgotPasswordPage";
 import NotFoundPage from "../pages/NotFoundPage";
 export default function AppRouter() {
   return (
@@ -33,6 +34,7 @@ export default function AppRouter() {
 
       <Route path="/login" element={<Navigate to="/" replace />} />
       <Route path="/register" element={<Navigate to="/" replace />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/auth/callback" element={<OAuthCallback />} />
 
       <Route element={<RequireAuth />}>

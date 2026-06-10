@@ -1279,6 +1279,15 @@ export default function StudentHomePage() {
                         )}
                       </button>
                     </div>
+                    <div className="flex justify-end">
+                      <Link
+                        to="/forgot-password"
+                        onClick={closeAuthModal}
+                        className="text-[11px] font-bold text-cocoa-900/60 hover:text-cocoa-900 transition-colors"
+                      >
+                        Forgot Password?
+                      </Link>
+                    </div>
                     <AnimatePresence>
                       {loginError && (
                         <motion.p
