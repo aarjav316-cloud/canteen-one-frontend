@@ -47,7 +47,6 @@ export default function AccountSettingsPage() {
   });
   const [refundPreference, setRefundPreference] = useState("wallet");
   const [displayName, setDisplayName] = useState(user?.name || "");
-  const [college, setCollege] = useState(user?.college || "");
   const [mobile, setMobile] = useState(user?.mobile || "");
   const [dp, setDp] = useState(user?.dp || "");
   const [isSavingProfile, setIsSavingProfile] = useState(false);
@@ -64,7 +63,6 @@ export default function AccountSettingsPage() {
         const { data } = await api.get("/auth/profile");
         if (data?.user) {
           setDisplayName(data.user.name || "");
-          setCollege(data.user.college || "");
           setMobile(data.user.mobile || "");
           setDp(data.user.dp || "");
           if (data.user.notificationPreferences) {
@@ -124,7 +122,6 @@ export default function AccountSettingsPage() {
     try {
       const { data } = await api.patch("/auth/profile", {
         name: displayName,
-        college,
         mobile,
       });
       if (data.token) {
@@ -220,7 +217,7 @@ export default function AccountSettingsPage() {
                 className="text-cocoa-900/30 flex-shrink-0"
               />
               <span className="text-[10px] font-semibold text-cocoa-900/50 truncate leading-tight">
-                {college || "College unknown"}
+                MEDICAPS UNIVERSITY
               </span>
             </div>
             <div className="mt-0.5 flex items-center gap-1.5">
@@ -257,22 +254,7 @@ export default function AccountSettingsPage() {
               className="mt-1.5 w-full rounded-[0.75rem] bg-[#F5F5F5] px-3 py-2.5 text-xs font-bold text-cocoa-900 outline-none focus:ring-2 focus:ring-cocoa-900/10 transition-all"
             />
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <label className="text-[9px] font-black uppercase tracking-widest text-cocoa-900/40">
-                College
-              </label>
-              <input
-                type="text"
-                value={college}
-                onChange={(e) => {
-                  setCollege(e.target.value);
-                  setNameSaved(false);
-                }}
-                placeholder="e.g. Current University"
-                className="mt-1.5 w-full rounded-[0.75rem] bg-[#F5F5F5] px-3 py-2.5 text-xs font-bold text-cocoa-900 outline-none focus:ring-2 focus:ring-cocoa-900/10 transition-all"
-              />
-            </div>
+          <div>
             <div>
               <label className="text-[9px] font-black uppercase tracking-widest text-cocoa-900/40">
                 Mobile

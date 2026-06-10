@@ -1,5 +1,14 @@
 import { useState } from "react";
-import { ArrowLeft, ChevronDown, ChevronUp, Search, Package, ShoppingBag, Users, Settings } from "lucide-react";
+import {
+  ArrowLeft,
+  ChevronDown,
+  ChevronUp,
+  Search,
+  Package,
+  ShoppingBag,
+  Users,
+  Settings,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 const FAQS = [
@@ -63,7 +72,7 @@ const FAQS = [
     items: [
       {
         q: "How do I change my canteen's name?",
-        a: "Go to Profile → Edit. You can update your Canteen's display name and the associated college name there.",
+        a: "Go to Profile → Edit. You can update your Canteen's display name there. College name is fixed to MEDICAPS UNIVERSITY.",
       },
       {
         q: "How do I upload a canteen logo or cover?",
@@ -82,25 +91,34 @@ export default function AdminHelpCentrePage() {
     items: cat.items.filter(
       (item) =>
         item.q.toLowerCase().includes(search.toLowerCase()) ||
-        item.a.toLowerCase().includes(search.toLowerCase())
+        item.a.toLowerCase().includes(search.toLowerCase()),
     ),
   })).filter((cat) => cat.items.length > 0);
   return (
     <div className="min-h-screen bg-[#F5F5F5] pb-24 font-sans text-cocoa-900">
-      
       <div className="px-4 pt-6 pb-3 flex items-center gap-3">
-        <button onClick={() => navigate(-1)} className="transition active:scale-90 bg-white p-2 rounded-full shadow-sm">
+        <button
+          onClick={() => navigate(-1)}
+          className="transition active:scale-90 bg-white p-2 rounded-full shadow-sm"
+        >
           <ArrowLeft size={20} />
         </button>
         <div>
-          <h1 className="text-xl font-display font-black tracking-tight leading-tight">Admin Support</h1>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-cocoa-900/40">Canteen Help Centre</p>
+          <h1 className="text-xl font-display font-black tracking-tight leading-tight">
+            Admin Support
+          </h1>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-cocoa-900/40">
+            Canteen Help Centre
+          </p>
         </div>
       </div>
-      
+
       <div className="mx-4 mt-4">
         <div className="relative flex items-center">
-          <Search size={15} className="absolute left-4 text-cocoa-900/30 z-10" />
+          <Search
+            size={15}
+            className="absolute left-4 text-cocoa-900/30 z-10"
+          />
           <input
             type="text"
             placeholder="Search help topics..."
@@ -110,51 +128,73 @@ export default function AdminHelpCentrePage() {
           />
         </div>
       </div>
-      
+
       <div className="mx-4 mt-6 space-y-5">
-        {filteredFaqs.length > 0 ? filteredFaqs.map((cat, ci) => {
-          const Icon = cat.icon;
-          return (
-            <div key={ci}>
-              <div className="flex items-center gap-2 mb-2 px-1">
-                <div className={`flex h-6 w-6 items-center justify-center rounded-lg ${cat.color}`}>
-                  <Icon size={13} strokeWidth={2.5} />
+        {filteredFaqs.length > 0 ? (
+          filteredFaqs.map((cat, ci) => {
+            const Icon = cat.icon;
+            return (
+              <div key={ci}>
+                <div className="flex items-center gap-2 mb-2 px-1">
+                  <div
+                    className={`flex h-6 w-6 items-center justify-center rounded-lg ${cat.color}`}
+                  >
+                    <Icon size={13} strokeWidth={2.5} />
+                  </div>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-cocoa-900/40">
+                    {cat.category}
+                  </p>
                 </div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-cocoa-900/40">{cat.category}</p>
+                <div className="rounded-[1.5rem] bg-white overflow-hidden divide-y divide-[#F5F5F5] shadow-sm ring-1 ring-black/5">
+                  {cat.items.map((item, ii) => {
+                    const key = `${ci}-${ii}`;
+                    const isOpen = openItem === key;
+                    return (
+                      <div key={ii}>
+                        <button
+                          onClick={() => toggle(key)}
+                          className="flex w-full items-center justify-between px-4 py-4 text-left transition active:bg-[#F5F5F5]"
+                        >
+                          <span className="text-xs font-black text-cocoa-900 pr-4 leading-snug">
+                            {item.q}
+                          </span>
+                          {isOpen ? (
+                            <ChevronUp
+                              size={15}
+                              className="text-cocoa-900/30"
+                            />
+                          ) : (
+                            <ChevronDown
+                              size={15}
+                              className="text-cocoa-900/30"
+                            />
+                          )}
+                        </button>
+                        <AnimatePresence>
+                          {isOpen && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              className="overflow-hidden"
+                            >
+                              <p className="px-4 pb-4 text-xs font-medium text-cocoa-900/50 leading-relaxed italic border-l-2 border-[#1A1A1A] ml-4">
+                                {item.a}
+                              </p>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-              <div className="rounded-[1.5rem] bg-white overflow-hidden divide-y divide-[#F5F5F5] shadow-sm ring-1 ring-black/5">
-                {cat.items.map((item, ii) => {
-                  const key = `${ci}-${ii}`;
-                  const isOpen = openItem === key;
-                  return (
-                    <div key={ii}>
-                      <button
-                        onClick={() => toggle(key)}
-                        className="flex w-full items-center justify-between px-4 py-4 text-left transition active:bg-[#F5F5F5]"
-                      >
-                        <span className="text-xs font-black text-cocoa-900 pr-4 leading-snug">{item.q}</span>
-                        {isOpen ? <ChevronUp size={15} className="text-cocoa-900/30" /> : <ChevronDown size={15} className="text-cocoa-900/30" />}
-                      </button>
-                      <AnimatePresence>
-                        {isOpen && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            className="overflow-hidden"
-                          >
-                            <p className="px-4 pb-4 text-xs font-medium text-cocoa-900/50 leading-relaxed italic border-l-2 border-[#1A1A1A] ml-4">{item.a}</p>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        }) : (
-          <div className="py-12 text-center text-xs font-bold text-cocoa-900/20">No matching help topics.</div>
+            );
+          })
+        ) : (
+          <div className="py-12 text-center text-xs font-bold text-cocoa-900/20">
+            No matching help topics.
+          </div>
         )}
       </div>
     </div>

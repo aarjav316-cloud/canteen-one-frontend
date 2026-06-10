@@ -36,92 +36,6 @@ import {
   showPaymentNotification,
 } from "../../services/notificationService.jsx";
 const activeStates = ["pending", "paid", "preparing", "ready"];
-const DUMMY_ITEMS = [
-  {
-    _id: "d1",
-    name: "Masala Dosa",
-    category: "breakfast",
-    description: "Crispy dosa with spicy potato filling",
-    price: 60,
-  },
-  {
-    _id: "d2",
-    name: "Veg Burger",
-    category: "snacks",
-    description: "Juicy veggie patty with fresh veggies",
-    price: 80,
-  },
-  {
-    _id: "d3",
-    name: "Paneer Rice",
-    category: "meals",
-    description: "Fragrant basmati rice with paneer",
-    price: 120,
-  },
-  {
-    _id: "d4",
-    name: "Masala Chai",
-    category: "beverages",
-    description: "Hot spiced Indian tea",
-    price: 20,
-  },
-  {
-    _id: "d5",
-    name: "Veg Maggi",
-    category: "snacks",
-    description: "Classic instant noodles with veggies",
-    price: 40,
-  },
-  {
-    _id: "d6",
-    name: "Samosa (2 pcs)",
-    category: "snacks",
-    description: "Crispy fried pastry with spiced filling",
-    price: 30,
-  },
-  {
-    _id: "d7",
-    name: "Idli Sambhar",
-    category: "breakfast",
-    description: "Soft steamed rice cakes with lentil soup",
-    price: 50,
-  },
-  {
-    _id: "d8",
-    name: "Cold Coffee",
-    category: "beverages",
-    description: "Chilled blended coffee with milk",
-    price: 60,
-  },
-  {
-    _id: "d9",
-    name: "Dal Rice",
-    category: "meals",
-    description: "Comforting lentil curry with steamed rice",
-    price: 90,
-  },
-  {
-    _id: "d10",
-    name: "Veg Sandwich",
-    category: "snacks",
-    description: "Toasted sandwich with fresh vegetables",
-    price: 50,
-  },
-  {
-    _id: "d11",
-    name: "Aloo Paratha",
-    category: "breakfast",
-    description: "Stuffed flatbread with spiced potato",
-    price: 55,
-  },
-  {
-    _id: "d12",
-    name: "Mango Lassi",
-    category: "beverages",
-    description: "Thick yogurt drink with mango pulp",
-    price: 45,
-  },
-];
 export default function StudentHomePage() {
   const { user, logout, login } = useAuth();
   const navigate = useNavigate();
@@ -158,7 +72,6 @@ export default function StudentHomePage() {
   const [resendLoading, setResendLoading] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
-  const [selectedCollege, setSelectedCollege] = useState("Loading Campus...");
   const [canteenName, setCanteenName] = useState("Your Canteen");
   const [notificationTab, setNotificationTab] = useState("Today");
   const [isCanteenOpen, setIsCanteenOpen] = useState(true);
@@ -187,29 +100,10 @@ export default function StudentHomePage() {
       return () => clearTimeout(timer);
     }
   }, [toastMessage]);
-  const [demoOrder, setDemoOrder] = useState(() => ({
-    _id: "DEMO" + Math.random().toString(36).slice(2, 8).toUpperCase(),
-    status: "pending",
-    totalAmount: 140,
-  }));
-  useEffect(() => {
-    if (user) return;
-    const progression = [
-      { status: "pending", delay: 0 },
-      { status: "preparing", delay: 5000 },
-      { status: "ready", delay: 12000 },
-    ];
-    const timers = progression.map(({ status, delay }) =>
-      setTimeout(() => setDemoOrder((o) => ({ ...o, status })), delay),
-    );
-    return () => timers.forEach(clearTimeout);
-  }, [user]);
   const activeOrder = useMemo(
     () =>
-      user
-        ? orders.find((order) => activeStates.includes(order.status))
-        : demoOrder,
-    [orders, user, demoOrder],
+      user ? orders.find((order) => activeStates.includes(order.status)) : null,
+    [orders, user],
   );
   useEffect(() => {
     const fetchData = async () => {
@@ -217,16 +111,13 @@ export default function StudentHomePage() {
       try {
         const menuRes = await api.get("/menu");
         const menuData = menuRes.data.data || [];
-        setMenuItems(menuData.length > 0 ? menuData : DUMMY_ITEMS);
+        setMenuItems(menuData);
         try {
           const settingsRes = await api.get("/settings");
           if (settingsRes.data.success) {
             setIsCanteenOpen(settingsRes.data.data.isOpen);
             if (settingsRes.data.data.canteenName) {
               setCanteenName(settingsRes.data.data.canteenName);
-            }
-            if (settingsRes.data.data.collegeName) {
-              setSelectedCollege(settingsRes.data.data.collegeName);
             }
           }
         } catch (e) {
@@ -255,7 +146,7 @@ export default function StudentHomePage() {
         }
       } catch (err) {
         console.error("Failed to fetch data", err);
-        setMenuItems(DUMMY_ITEMS);
+        setMenuItems([]);
       } finally {
         setLoading(false);
       }
@@ -590,13 +481,11 @@ export default function StudentHomePage() {
                 <>
                   <div className="flex items-center gap-1">
                     <span className="text-sm font-black text-white tracking-tight drop-shadow-lg whitespace-nowrap">
-                      {selectedCollege.split(" ")[0]}
+                      MEDICAPS
                     </span>
                   </div>
                   <p className="text-[9px] font-bold tracking-wide text-white/80 uppercase drop-shadow-lg whitespace-nowrap">
-                    {selectedCollege.length > 20
-                      ? selectedCollege.slice(0, 20) + "..."
-                      : selectedCollege}
+                    MEDICAPS UNIVERSITY
                   </p>
                 </>
               )}
@@ -1089,10 +978,7 @@ export default function StudentHomePage() {
                         {user?.name || "User"}
                       </h3>
                       <p className="text-[10px] font-bold text-cocoa-900/40 truncate max-w-[150px] tracking-tight flex items-center gap-1">
-                        <GraduationCap size={9} />{" "}
-                        {user?.college
-                          ? user.college.split(" ").slice(0, 2).join(" ")
-                          : "No College"}
+                        <GraduationCap size={9} /> MEDICAPS UNIVERSITY
                       </p>
                       <p className="text-[10px] font-bold text-cocoa-900/40 truncate max-w-[150px] tracking-tight flex items-center gap-1">
                         <Phone size={9} /> {user?.mobile || "No Mobile"}
